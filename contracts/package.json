@@ -4,8 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "check": "npm run typecheck",
-    "typecheck": "tsc --project tsconfig.json"
+    "test": "node --experimental-strip-types --test test/contracts.test.ts",
+    "typecheck": "tsc --project tsconfig.json",
+    "check": "npm run typecheck && npm test"
   },
   "devDependencies": {
     "typescript": "^5.9.0"

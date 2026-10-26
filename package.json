@@ -1,0 +1,42 @@
+{
+  "name": "incidentlens",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AI-assisted release regression investigation platform",
+  "packageManager": "pnpm@10.28.2",
+  "engines": {
+    "node": ">=20.20.0",
+    "pnpm": ">=10.28.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "webpack": "5.112.0"
+    }
+  },
+  "scripts": {
+    "build": "pnpm --filter @incidentlens/config --filter @incidentlens/contracts run build && pnpm --filter @incidentlens/web --filter @incidentlens/api --filter @incidentlens/worker run build",
+    "check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build",
+    "dev": "pnpm --filter @incidentlens/config build && pnpm --parallel --filter @incidentlens/web --filter @incidentlens/api --filter @incidentlens/worker run dev",
+    "dev:api": "pnpm --filter @incidentlens/config build && pnpm --filter @incidentlens/api dev",
+    "dev:web": "pnpm --filter @incidentlens/config build && pnpm --filter @incidentlens/web dev",
+    "dev:worker": "pnpm --filter @incidentlens/config build && pnpm --filter @incidentlens/worker dev",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint": "eslint . --max-warnings 0",
+    "test": "pnpm --recursive --if-present run test && node --test scripts/workspace.test.mjs",
+    "typecheck": "pnpm --filter @incidentlens/config build && pnpm --recursive --if-present run typecheck"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@nestjs/cli": "11.0.24",
+    "@types/node": "26.6.5",
+    "eslint": "10.13.0",
+    "eslint-config-prettier": "10.1.8",
+    "eslint-plugin-react-hooks": "7.1.1",
+    "globals": "17.13.0",
+    "prettier": "3.9.10",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.72.0",
+    "webpack": "5.112.0"
+  }
+}

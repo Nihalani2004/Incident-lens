@@ -2,23 +2,23 @@
 
 ## Lifecycle states
 
-| State | Meaning |
-|---|---|
-| `open` | Created automatically and not yet acknowledged by a responder. |
-| `acknowledged` | A responder has accepted responsibility for initial triage. |
-| `investigating` | Active diagnosis is underway. |
-| `mitigated` | User impact is controlled, but the incident is not fully closed. |
-| `resolved` | Response is complete and a human-approved resolution is recorded. |
+| State           | Meaning                                                           |
+| --------------- | ----------------------------------------------------------------- |
+| `open`          | Created automatically and not yet acknowledged by a responder.    |
+| `acknowledged`  | A responder has accepted responsibility for initial triage.       |
+| `investigating` | Active diagnosis is underway.                                     |
+| `mitigated`     | User impact is controlled, but the incident is not fully closed.  |
+| `resolved`      | Response is complete and a human-approved resolution is recorded. |
 
 ## Valid transitions
 
-| From | Allowed destinations |
-|---|---|
-| `open` | `acknowledged` |
-| `acknowledged` | `investigating`, `mitigated` |
-| `investigating` | `mitigated`, `resolved` |
-| `mitigated` | `investigating`, `resolved` |
-| `resolved` | `investigating` (explicit manual reopen only) |
+| From            | Allowed destinations                          |
+| --------------- | --------------------------------------------- |
+| `open`          | `acknowledged`                                |
+| `acknowledged`  | `investigating`, `mitigated`                  |
+| `investigating` | `mitigated`, `resolved`                       |
+| `mitigated`     | `investigating`, `resolved`                   |
+| `resolved`      | `investigating` (explicit manual reopen only) |
 
 Self-transitions and all transitions not listed above are invalid. Transition validation is
 centralized in `contracts/src/policies.ts`.
@@ -29,12 +29,12 @@ explicitly reopen a resolved incident when the earlier response itself was close
 
 ## Severity levels
 
-| Level | Meaning | Expected effect |
-|---|---|---|
-| `sev1` | Critical | Broad outage, severe data/security risk, or core workflow unavailable. |
-| `sev2` | High | Major degradation or a substantial user segment cannot complete a core workflow. |
-| `sev3` | Medium | Limited degradation, workaround available, or a smaller segment is affected. |
-| `sev4` | Low | Minor operational defect with little immediate user impact. |
+| Level  | Meaning  | Expected effect                                                                  |
+| ------ | -------- | -------------------------------------------------------------------------------- |
+| `sev1` | Critical | Broad outage, severe data/security risk, or core workflow unavailable.           |
+| `sev2` | High     | Major degradation or a substantial user segment cannot complete a core workflow. |
+| `sev3` | Medium   | Limited degradation, workaround available, or a smaller segment is affected.     |
+| `sev4` | Low      | Minor operational defect with little immediate user impact.                      |
 
 Severity is independent of AI confidence and regression-correlation confidence.
 
@@ -45,8 +45,8 @@ Default policy values:
 - Baseline window: 30 minutes immediately before deployment completion.
 - Observation window: 60 minutes beginning at deployment completion.
 - New-error threshold: at least 3 occurrences in the observation window and 0 in baseline.
-- Increased-error threshold: at least 5 observation occurrences, at least 3 more than baseline,
-  and an observation rate at least 3 times the baseline rate.
+- Increased-error threshold: at least 5 observation occurrences, at least 3 more than baseline, and
+  an observation rate at least 3 times the baseline rate.
 - Recurrence lookback: 90 days.
 
 A deployment is a **regression candidate** only when all scope criteria pass:
@@ -73,5 +73,5 @@ A new incident is a recurrence when a resolved incident:
 - contains the same fingerprint value and algorithm version; and
 - was resolved no more than 90 days before the new incident began.
 
-The 90-day boundary is inclusive. Recurrence is historical linkage, not proof that the root cause
-is the same.
+The 90-day boundary is inclusive. Recurrence is historical linkage, not proof that the root cause is
+the same.

@@ -3,12 +3,19 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
+    "build": "tsc --project tsconfig.build.json",
     "test": "node --experimental-strip-types --test test/contracts.test.ts",
     "typecheck": "tsc --project tsconfig.json",
     "check": "npm run typecheck && npm test"
-  },
-  "devDependencies": {
-    "typescript": "^5.9.0"
   }
 }

@@ -16,7 +16,7 @@ later roadmap phases.
 
 ## Workspace requirements
 
-- Node.js 20.20.0 or newer
+- Node.js 22.6.0 or newer
 - pnpm 10.28 or newer
 
 Docker is not required.

@@ -22,7 +22,7 @@ class workspace package and may be relocated only through a separately reviewed 
 ## Tooling decisions
 
 - pnpm is the only package manager; one lockfile is stored at the repository root.
-- Node.js 22.6.0 is the documented baseline. Newer compatible Node versions may be used.
+- Node.js 22.13.0 is the documented baseline. Newer compatible Node versions may be used.
 - NestJS 11 is intentionally selected because it supports the Node 20 baseline; NestJS 12 requires a
   newer Node LTS line and is therefore outside the current compatibility target.
 - Strict TypeScript rules are inherited from `tsconfig.base.json`.

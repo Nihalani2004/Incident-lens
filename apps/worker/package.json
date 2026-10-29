@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@incidentlens/config": "workspace:*",
+    "@incidentlens/runtime": "workspace:*",
     "@nestjs/common": "catalog:",
     "@nestjs/core": "catalog:",
     "reflect-metadata": "catalog:",

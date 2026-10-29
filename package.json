@@ -10,21 +10,27 @@
   },
   "pnpm": {
     "overrides": {
+      "multer": "2.5.0",
       "webpack": "5.112.0"
     }
   },
   "scripts": {
-    "build": "pnpm --filter @incidentlens/config --filter @incidentlens/contracts run build && pnpm --filter @incidentlens/web --filter @incidentlens/api --filter @incidentlens/worker run build",
+    "build": "pnpm --filter @incidentlens/config --filter @incidentlens/contracts --filter @incidentlens/runtime run build && pnpm --filter @incidentlens/web --filter @incidentlens/api --filter @incidentlens/worker run build",
     "check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build",
-    "dev": "pnpm --filter @incidentlens/config build && pnpm --parallel --filter @incidentlens/web --filter @incidentlens/api --filter @incidentlens/worker run dev",
-    "dev:api": "pnpm --filter @incidentlens/config build && pnpm --filter @incidentlens/api dev",
+    "dev": "pnpm runtime:up && pnpm --filter @incidentlens/config build && pnpm --filter @incidentlens/runtime build && pnpm --parallel --filter @incidentlens/web --filter @incidentlens/api --filter @incidentlens/worker run dev",
+    "dev:api": "pnpm --filter @incidentlens/config build && pnpm --filter @incidentlens/runtime build && pnpm --filter @incidentlens/api dev",
     "dev:web": "pnpm --filter @incidentlens/config build && pnpm --filter @incidentlens/web dev",
-    "dev:worker": "pnpm --filter @incidentlens/config build && pnpm --filter @incidentlens/worker dev",
+    "dev:worker": "pnpm --filter @incidentlens/config build && pnpm --filter @incidentlens/runtime build && pnpm --filter @incidentlens/worker dev",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "eslint . --max-warnings 0",
+    "runtime:down": "docker compose down",
+    "runtime:logs": "docker compose logs --follow postgres redis",
+    "runtime:smoke": "node scripts/runtime-smoke.mjs",
+    "runtime:up": "docker compose up --detach --wait",
     "test": "pnpm --recursive --if-present run test && node --test scripts/workspace.test.mjs",
-    "typecheck": "pnpm --filter @incidentlens/config build && pnpm --recursive --if-present run typecheck"
+    "test:integration": "pnpm runtime:up && pnpm --filter @incidentlens/runtime test:integration",
+    "typecheck": "pnpm --filter @incidentlens/config --filter @incidentlens/runtime run build && pnpm --recursive --if-present run typecheck"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

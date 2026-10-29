@@ -10,7 +10,28 @@ const commonEnvironmentSchema = z.object({
   LOG_LEVEL: logLevelSchema.default('info'),
 });
 
-const apiEnvironmentSchema = commonEnvironmentSchema.extend({
+const databaseUrlSchema = z
+  .string()
+  .url()
+  .refine((value) => ['postgres:', 'postgresql:'].includes(new URL(value).protocol), {
+    message: 'Must use the postgres or postgresql protocol.',
+  });
+
+const redisUrlSchema = z
+  .string()
+  .url()
+  .refine((value) => ['redis:', 'rediss:'].includes(new URL(value).protocol), {
+    message: 'Must use the redis or rediss protocol.',
+  });
+
+const runtimeEnvironmentSchema = commonEnvironmentSchema.extend({
+  DATABASE_URL: databaseUrlSchema,
+  REDIS_URL: redisUrlSchema,
+  DEPENDENCY_TIMEOUT_MS: z.coerce.number().int().min(100).max(30_000).default(2_000),
+  POSTGRES_POOL_MAX: z.coerce.number().int().min(1).max(50).default(10),
+});
+
+const apiEnvironmentSchema = runtimeEnvironmentSchema.extend({
   API_PORT: z.coerce.number().int().min(1).max(65_535).default(4000),
   WEB_ORIGIN: z.string().url().default('http://localhost:3000'),
 });
@@ -20,7 +41,14 @@ const webEnvironmentSchema = commonEnvironmentSchema.extend({
   NEXT_PUBLIC_APP_NAME: z.string().trim().min(1).max(64).default('IncidentLens'),
 });
 
-const workerEnvironmentSchema = commonEnvironmentSchema;
+const workerEnvironmentSchema = runtimeEnvironmentSchema.extend({
+  WORKER_PORT: z.coerce.number().int().min(1).max(65_535).default(4001),
+});
+
+const localRuntimeDefaults = Object.freeze({
+  DATABASE_URL: 'postgresql://incidentlens:incidentlens_local@localhost:5432/incidentlens',
+  REDIS_URL: 'redis://localhost:6379',
+});
 
 export type ApiEnvironment = Readonly<z.infer<typeof apiEnvironmentSchema>>;
 export type WebEnvironment = Readonly<z.infer<typeof webEnvironmentSchema>>;
@@ -61,8 +89,19 @@ function parseEnvironment<TSchema extends z.ZodType>(
   return Object.freeze(parsed.data);
 }
 
+function withLocalRuntimeDefaults(source: EnvironmentSource): EnvironmentSource {
+  if (source.NODE_ENV === 'production') {
+    return source;
+  }
+
+  return {
+    ...localRuntimeDefaults,
+    ...source,
+  };
+}
+
 export function validateApiEnvironment(source: EnvironmentSource): ApiEnvironment {
-  return parseEnvironment('API', apiEnvironmentSchema, source);
+  return parseEnvironment('API', apiEnvironmentSchema, withLocalRuntimeDefaults(source));
 }
 
 export function validateWebEnvironment(source: EnvironmentSource): WebEnvironment {
@@ -70,5 +109,5 @@ export function validateWebEnvironment(source: EnvironmentSource): WebEnvironmen
 }
 
 export function validateWorkerEnvironment(source: EnvironmentSource): WorkerEnvironment {
-  return parseEnvironment('worker', workerEnvironmentSchema, source);
+  return parseEnvironment('worker', workerEnvironmentSchema, withLocalRuntimeDefaults(source));
 }

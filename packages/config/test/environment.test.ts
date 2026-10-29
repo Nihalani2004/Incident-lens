@@ -13,6 +13,10 @@ describe('environment validation', () => {
     assert.deepEqual(validateApiEnvironment({}), {
       NODE_ENV: 'development',
       LOG_LEVEL: 'info',
+      DATABASE_URL: 'postgresql://incidentlens:incidentlens_local@localhost:5432/incidentlens',
+      REDIS_URL: 'redis://localhost:6379',
+      DEPENDENCY_TIMEOUT_MS: 2_000,
+      POSTGRES_POOL_MAX: 10,
       API_PORT: 4000,
       WEB_ORIGIN: 'http://localhost:3000',
     });
@@ -25,6 +29,11 @@ describe('environment validation', () => {
     assert.deepEqual(validateWorkerEnvironment({}), {
       NODE_ENV: 'development',
       LOG_LEVEL: 'info',
+      DATABASE_URL: 'postgresql://incidentlens:incidentlens_local@localhost:5432/incidentlens',
+      REDIS_URL: 'redis://localhost:6379',
+      DEPENDENCY_TIMEOUT_MS: 2_000,
+      POSTGRES_POOL_MAX: 10,
+      WORKER_PORT: 4001,
     });
   });
 
@@ -33,12 +42,20 @@ describe('environment validation', () => {
       validateApiEnvironment({
         NODE_ENV: 'test',
         LOG_LEVEL: 'debug',
+        DATABASE_URL: 'postgresql://app:local@database.example.com:5432/incidentlens',
+        REDIS_URL: 'rediss://cache.example.com:6380',
+        DEPENDENCY_TIMEOUT_MS: '5000',
+        POSTGRES_POOL_MAX: '20',
         API_PORT: '5050',
         WEB_ORIGIN: 'https://incidentlens.example.com',
       }),
       {
         NODE_ENV: 'test',
         LOG_LEVEL: 'debug',
+        DATABASE_URL: 'postgresql://app:local@database.example.com:5432/incidentlens',
+        REDIS_URL: 'rediss://cache.example.com:6380',
+        DEPENDENCY_TIMEOUT_MS: 5_000,
+        POSTGRES_POOL_MAX: 20,
         API_PORT: 5050,
         WEB_ORIGIN: 'https://incidentlens.example.com',
       },
@@ -56,6 +73,11 @@ describe('environment validation', () => {
       { API_PORT: '65536' },
       { API_PORT: 'not-a-number' },
       { WEB_ORIGIN: 'not-a-url' },
+      { DATABASE_URL: 'https://database.example.com/incidentlens' },
+      { REDIS_URL: 'https://cache.example.com' },
+      { DEPENDENCY_TIMEOUT_MS: '99' },
+      { DEPENDENCY_TIMEOUT_MS: '30001' },
+      { POSTGRES_POOL_MAX: '0' },
       { NODE_ENV: 'staging' },
       { LOG_LEVEL: 'verbose' },
     ];
@@ -63,6 +85,29 @@ describe('environment validation', () => {
     for (const source of invalidSources) {
       assert.throws(() => validateApiEnvironment(source), EnvironmentValidationError);
     }
+  });
+
+  test('requires dependency URLs in production', () => {
+    assert.throws(
+      () => validateApiEnvironment({ NODE_ENV: 'production' }),
+      (error: unknown) => {
+        assert.ok(error instanceof EnvironmentValidationError);
+        assert.deepEqual(error.issues.map((issue) => issue.path).sort(), [
+          'DATABASE_URL',
+          'REDIS_URL',
+        ]);
+        return true;
+      },
+    );
+  });
+
+  test('validates the worker health port boundaries', () => {
+    assert.equal(validateWorkerEnvironment({ WORKER_PORT: '1' }).WORKER_PORT, 1);
+    assert.equal(validateWorkerEnvironment({ WORKER_PORT: '65535' }).WORKER_PORT, 65_535);
+    assert.throws(
+      () => validateWorkerEnvironment({ WORKER_PORT: '65536' }),
+      EnvironmentValidationError,
+    );
   });
 
   test('does not expose rejected environment values in the top-level error message', () => {

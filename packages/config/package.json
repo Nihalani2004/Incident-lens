@@ -14,7 +14,8 @@
   ],
   "scripts": {
     "build": "tsc --project tsconfig.build.json",
-    "test": "node --experimental-strip-types --test test/environment.test.ts",
+    "test": "pnpm test:unit",
+    "test:unit": "node --experimental-strip-types --test test/environment.test.ts",
     "typecheck": "tsc --project tsconfig.json"
   },
   "dependencies": {

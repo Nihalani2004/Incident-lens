@@ -6,11 +6,15 @@
   "scripts": {
     "build": "nest build",
     "dev": "nest start --watch",
+    "dev:poll": "nest start --watch",
     "start": "node dist/main.js",
+    "test:integration": "node --experimental-strip-types --test test/worker.integration.test.ts",
+    "test:unit": "node --experimental-strip-types --test test/worker.test.ts",
     "typecheck": "tsc --project tsconfig.json"
   },
   "dependencies": {
     "@incidentlens/config": "workspace:*",
+    "@incidentlens/queue": "workspace:*",
     "@incidentlens/runtime": "workspace:*",
     "@nestjs/common": "catalog:",
     "@nestjs/core": "catalog:",

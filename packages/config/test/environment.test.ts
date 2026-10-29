@@ -99,6 +99,17 @@ describe('environment validation', () => {
         return true;
       },
     );
+    assert.throws(
+      () => validateWorkerEnvironment({ NODE_ENV: 'production' }),
+      (error: unknown) => {
+        assert.ok(error instanceof EnvironmentValidationError);
+        assert.deepEqual(error.issues.map((issue) => issue.path).sort(), [
+          'DATABASE_URL',
+          'REDIS_URL',
+        ]);
+        return true;
+      },
+    );
   });
 
   test('validates the worker health port boundaries', () => {

@@ -5,6 +5,7 @@ import { reportBootstrapFailure, useStructuredLogger } from '@incidentlens/runti
 import { NestFactory } from '@nestjs/core';
 
 import { createAppModule } from './app.module.js';
+import { createApiCorsOptions } from './cors.js';
 
 async function bootstrap(): Promise<void> {
   const environment = validateApiEnvironment(process.env);
@@ -14,12 +15,7 @@ async function bootstrap(): Promise<void> {
   const logger = useStructuredLogger(application);
   application.getHttpAdapter().getInstance().disable('x-powered-by');
 
-  application.enableCors({
-    allowedHeaders: ['Content-Type', 'X-Correlation-ID', 'X-Request-ID'],
-    credentials: true,
-    exposedHeaders: ['X-Correlation-ID', 'X-Request-ID'],
-    origin: environment.WEB_ORIGIN,
-  });
+  application.enableCors(createApiCorsOptions(environment.WEB_ORIGIN));
   application.enableShutdownHooks();
 
   await application.listen(environment.API_PORT);

@@ -2,10 +2,13 @@
   "name": "@incidentlens/web",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "build": "next build",
     "dev": "next dev",
+    "dev:poll": "next dev --webpack",
     "start": "next start",
+    "test:unit": "node --experimental-strip-types --test test/*.test.ts",
     "typecheck": "next typegen && tsc --noEmit"
   },
   "dependencies": {

@@ -1,12 +1,10 @@
-import type {
-  CanonicalAiAnalysis,
-  CanonicalAlert,
-  CanonicalDeployment,
-  CanonicalEvidence,
-  CanonicalIncident,
-  ErrorFingerprint,
-  RegressionEvaluationInput,
-} from '../src/index.ts';
+import type { CanonicalAiAnalysis } from '../ai-analysis.ts';
+import type { CanonicalAlert } from '../alert.ts';
+import type { CanonicalDeployment } from '../deployment.ts';
+import type { ErrorFingerprint } from '../error-fingerprint.ts';
+import type { CanonicalEvidence } from '../evidence.ts';
+import type { CanonicalIncident } from '../incident.ts';
+import type { RegressionEvaluationInput } from '../policies.ts';
 
 export const IDS = {
   organization: '11111111-1111-4111-8111-111111111111',

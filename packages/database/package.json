@@ -1,0 +1,31 @@
+{
+  "name": "@incidentlens/database",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "migrations"
+  ],
+  "scripts": {
+    "build": "tsc --project tsconfig.build.json",
+    "migrate": "node --experimental-strip-types src/cli.ts up",
+    "rollback": "node --experimental-strip-types src/cli.ts down",
+    "test:integration": "node --experimental-strip-types --test test/migrations.integration.test.ts",
+    "test:unit": "node --experimental-strip-types --test test/migrations.test.ts",
+    "typecheck": "tsc --project tsconfig.json"
+  },
+  "dependencies": {
+    "pg": "8.23.1"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "@types/pg": "8.23.1"
+  }
+}

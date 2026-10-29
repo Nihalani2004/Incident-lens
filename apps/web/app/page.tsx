@@ -16,8 +16,8 @@ export default function FoundationPage() {
         </p>
         <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">IncidentLens</h1>
         <p className="max-w-2xl text-base leading-7 text-zinc-400">
-          The Phase 1C runtime verifies every application boundary before product workflows are
-          introduced.
+          The Phase 1 quality foundation verifies every application boundary before product
+          workflows are introduced.
         </p>
       </div>
 

@@ -30,6 +30,8 @@ describe('workspace structure', () => {
       ['apps/worker/package.json', '@incidentlens/worker'],
       ['contracts/package.json', '@incidentlens/contracts'],
       ['packages/config/package.json', '@incidentlens/config'],
+      ['packages/database/package.json', '@incidentlens/database'],
+      ['packages/queue/package.json', '@incidentlens/queue'],
       ['packages/runtime/package.json', '@incidentlens/runtime'],
     ]);
 
@@ -39,6 +41,7 @@ describe('workspace structure', () => {
       assert.equal(manifest.private, true);
       assert.equal(typeof manifest.scripts.typecheck, 'string');
       assert.equal(typeof manifest.scripts.build, 'string');
+      assert.equal(typeof manifest.scripts['test:unit'], 'string');
     }
   });
 
@@ -79,11 +82,36 @@ describe('workspace structure', () => {
     assert.match(compose, /healthcheck:/);
   });
 
-  test('does not introduce Phase 1D persistence or queue behavior', async () => {
-    const forbiddenArtifacts = ['prisma/schema.prisma', 'drizzle.config.ts'];
+  test('declares the Phase 1D quality-gate boundary', async () => {
+    const requiredArtifacts = [
+      'packages/database/migrations/0001_create_incidentlens_schema.up.sql',
+      'packages/database/migrations/0001_create_incidentlens_schema.down.sql',
+      'packages/queue/src/quality-gate.ts',
+      'playwright.config.ts',
+      'tests/e2e/runtime-status.spec.ts',
+      'scripts/workspace-boundaries.mjs',
+    ];
 
-    for (const artifact of forbiddenArtifacts) {
-      assert.equal(await exists(artifact), false, `${join('.', artifact)} is outside Phase 1C`);
+    for (const artifact of requiredArtifacts) {
+      assert.equal(await exists(artifact), true, `${join('.', artifact)} is required by Phase 1D`);
     }
+
+    const rootPackage = readJson('package.json');
+    assert.equal(typeof rootPackage.scripts['test:e2e'], 'string');
+    assert.equal(typeof rootPackage.scripts['workspace:check'], 'string');
+    assert.equal(typeof rootPackage.scripts['db:migrate'], 'string');
+    assert.equal(typeof rootPackage.scripts['db:rollback'], 'string');
+  });
+
+  test('keeps synthetic incident scenarios reusable and Phase 2 out of scope', async () => {
+    const fixtures = readFileSync(
+      new URL('contracts/src/fixtures/synthetic-scenarios.ts', repositoryRoot),
+      'utf8',
+    );
+    assert.match(fixtures, /export const syntheticScenarios/);
+    assert.match(fixtures, /new_error/);
+    assert.match(fixtures, /increased_error_rate/);
+    assert.equal(await exists('apps/api/src/incidents'), false);
+    assert.equal(await exists('apps/api/src/auth'), false);
   });
 });

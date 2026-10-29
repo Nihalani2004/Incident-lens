@@ -11,7 +11,7 @@ import {
   newErrorAlerts,
   syntheticScenarios,
   taxFingerprint,
-} from '../fixtures/synthetic-scenarios.ts';
+} from '../src/fixtures/synthetic-scenarios.ts';
 import {
   DEFAULT_REGRESSION_POLICY,
   alertDeduplicationKey,

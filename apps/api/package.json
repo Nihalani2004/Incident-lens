@@ -6,7 +6,9 @@
   "scripts": {
     "build": "nest build",
     "dev": "nest start --watch",
+    "dev:poll": "nest start --watch",
     "start": "node dist/main.js",
+    "test:unit": "node --experimental-strip-types --test test/*.test.ts",
     "typecheck": "tsc --project tsconfig.json"
   },
   "dependencies": {

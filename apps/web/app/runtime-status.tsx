@@ -2,7 +2,11 @@
 
 import { useEffect, useState } from 'react';
 
-type ConnectionState = 'checking' | 'connected' | 'unavailable';
+import {
+  createApiReadinessUrl,
+  getRuntimeStatusMessage,
+  type ConnectionState,
+} from './runtime-status.model';
 
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:4000';
 
@@ -15,7 +19,7 @@ export function RuntimeStatus() {
 
     async function verifyApiConnection(): Promise<void> {
       try {
-        const response = await fetch(`${apiBaseUrl}/health/ready`, {
+        const response = await fetch(createApiReadinessUrl(apiBaseUrl), {
           cache: 'no-store',
           headers: {
             'x-correlation-id': correlationId,
@@ -34,12 +38,6 @@ export function RuntimeStatus() {
     return () => controller.abort();
   }, []);
 
-  const message = {
-    checking: 'Checking API and local dependencies…',
-    connected: 'API, PostgreSQL, pgvector, and Redis are connected.',
-    unavailable: 'The local runtime is unavailable. Check the service health endpoints.',
-  }[connectionState];
-
   return (
     <section
       className="rounded-xl border border-zinc-800 bg-zinc-900 p-5"
@@ -49,7 +47,7 @@ export function RuntimeStatus() {
       <p className="text-xs font-semibold tracking-[0.18em] text-zinc-500 uppercase">
         Runtime status
       </p>
-      <p className="mt-2 text-sm text-zinc-200">{message}</p>
+      <p className="mt-2 text-sm text-zinc-200">{getRuntimeStatusMessage(connectionState)}</p>
     </section>
   );
 }

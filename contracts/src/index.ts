@@ -5,4 +5,5 @@ export * from './deployment.ts';
 export * from './error-fingerprint.ts';
 export * from './evidence.ts';
 export * from './incident.ts';
+export * from './fixtures/synthetic-scenarios.ts';
 export * from './policies.ts';

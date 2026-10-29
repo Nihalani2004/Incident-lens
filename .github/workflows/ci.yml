@@ -19,7 +19,7 @@ jobs:
   quality:
     name: Quality gate
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
 
     steps:
       - name: Check out the repository
@@ -46,20 +46,29 @@ jobs:
       - name: Verify linting
         run: pnpm lint
 
+      - name: Verify workspace boundaries
+        run: pnpm workspace:check
+
       - name: Verify types
         run: pnpm typecheck
 
-      - name: Run tests
-        run: pnpm test
+      - name: Run unit tests
+        run: pnpm test:unit
 
       - name: Start runtime dependencies
         run: docker compose up --detach --wait
 
-      - name: Run runtime integration tests
-        run: pnpm --filter @incidentlens/runtime test:integration
+      - name: Run integration tests
+        run: pnpm test:integration
 
       - name: Build all workspace packages
         run: pnpm build
+
+      - name: Install the Chromium test browser
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Run browser smoke tests
+        run: pnpm test:e2e:run
 
       - name: Stop runtime dependencies
         if: always()

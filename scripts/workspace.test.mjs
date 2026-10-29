@@ -30,6 +30,7 @@ describe('workspace structure', () => {
       ['apps/worker/package.json', '@incidentlens/worker'],
       ['contracts/package.json', '@incidentlens/contracts'],
       ['packages/config/package.json', '@incidentlens/config'],
+      ['packages/runtime/package.json', '@incidentlens/runtime'],
     ]);
 
     for (const [manifestPath, packageName] of expectedPackages) {
@@ -57,16 +58,32 @@ describe('workspace structure', () => {
     }
   });
 
-  test('does not introduce Phase 1C infrastructure', async () => {
-    const forbiddenArtifacts = [
-      'Dockerfile',
-      'docker-compose.yml',
+  test('declares the complete Phase 1C local runtime boundary', async () => {
+    const requiredArtifacts = [
       'compose.yml',
-      'prisma/schema.prisma',
+      'infra/postgres/init/001-enable-vector.sql',
+      'scripts/runtime-smoke.mjs',
     ];
 
+    for (const artifact of requiredArtifacts) {
+      assert.equal(await exists(artifact), true, `${join('.', artifact)} is required by Phase 1C`);
+    }
+
+    const rootPackage = readJson('package.json');
+    assert.match(rootPackage.scripts.dev, /runtime:up/);
+    assert.equal(typeof rootPackage.scripts['runtime:smoke'], 'string');
+
+    const compose = readFileSync(new URL('compose.yml', repositoryRoot), 'utf8');
+    assert.match(compose, /pgvector\/pgvector:0\.8\.7-pg17-bookworm/);
+    assert.match(compose, /redis:8\.10\.2-alpine/);
+    assert.match(compose, /healthcheck:/);
+  });
+
+  test('does not introduce Phase 1D persistence or queue behavior', async () => {
+    const forbiddenArtifacts = ['prisma/schema.prisma', 'drizzle.config.ts'];
+
     for (const artifact of forbiddenArtifacts) {
-      assert.equal(await exists(artifact), false, `${join('.', artifact)} is outside Phase 1B`);
+      assert.equal(await exists(artifact), false, `${join('.', artifact)} is outside Phase 1C`);
     }
   });
 });

@@ -6,7 +6,7 @@
 | Canonical contracts exist for every required domain record | `contracts/src/*.ts`, `docs/domain/data-contracts.md`           | Contract validation tests and strict type check |
 | Lifecycle and severity policies are unambiguous            | `contracts/src/policies.ts`, `docs/domain/incident-policies.md` | Transition and severity tests                   |
 | Regression criteria are deterministic and bounded          | `contracts/src/policies.ts`, `docs/domain/incident-policies.md` | New, increased, unrelated, and boundary tests   |
-| Required synthetic scenarios are reusable                  | `contracts/fixtures/synthetic-scenarios.ts`                     | Scenario validation tests                       |
+| Required synthetic scenarios are reusable                  | `contracts/src/fixtures/synthetic-scenarios.ts`                 | Scenario validation tests                       |
 | Duplicate source delivery has a stable identity            | `alertDeduplicationKey`                                         | Duplicate-event test                            |
 | Recurrence is distinguished from reopen                    | Incident contract and recurrence policy                         | Recurrence and lifecycle tests                  |
 | AI outputs remain evidence-backed                          | AI analysis validator                                           | Unknown-evidence and confidence-boundary tests  |

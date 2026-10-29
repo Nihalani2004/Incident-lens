@@ -96,9 +96,14 @@ pnpm runtime:smoke
 `pnpm test:integration` starts the Compose dependencies and directly verifies PostgreSQL, pgvector,
 and Redis. `pnpm runtime:smoke` expects `pnpm dev` to be running.
 
-## Deferred beyond Phase 1C
+## Added after Phase 1C
 
-- Product database schema, migrations, repositories, and seed data.
-- BullMQ queues, processors, retries, and scheduled jobs.
+Phase 1D adds reversible migration tooling, a BullMQ quality-gate probe, and complete automated
+quality gates. These remain infrastructure verification only.
+
+## Still deferred
+
+- Product database tables, repositories, and seed data.
+- Product queues, retries, and scheduled jobs.
 - Authentication, tenant authorization, integrations, incident workflows, and AI analysis.
 - Application container images and production infrastructure definitions.

@@ -1,11 +1,11 @@
 # IncidentLens
 
-IncidentLens currently includes **Phase 1A: Product and Data Contracts** and **Phase 1B: Workspace
-Foundation**.
+IncidentLens currently includes **Phase 1A: Product and Data Contracts**, **Phase 1B: Workspace
+Foundation**, and **Phase 1C: Local Runtime**.
 
-The repository provides strictly validated domain contracts and separate foundations for the web,
-API, and background-worker processes. Product workflows and infrastructure connections begin in
-later roadmap phases.
+The repository provides validated domain contracts plus connected web, API, worker, PostgreSQL with
+pgvector, and Redis runtime boundaries. Product persistence and workflows begin in later roadmap
+phases.
 
 ## Phase 1A documentation
 
@@ -18,8 +18,9 @@ later roadmap phases.
 
 - Node.js 22.13.0 or newer
 - pnpm 10.28 or newer
+- Docker Desktop with Docker Compose
 
-Docker is not required.
+Docker is required for the Phase 1C local PostgreSQL and Redis services.
 
 ## Setup and verification
 
@@ -27,21 +28,32 @@ From the repository root:
 
 ```powershell
 pnpm install
-pnpm check
+pnpm dev
 ```
 
-Development processes can be started independently:
+`pnpm dev` starts PostgreSQL/pgvector and Redis through Docker Compose, waits for them to become
+healthy, and then starts the web, API, and worker processes. In a second terminal, verify the full
+runtime:
 
 ```powershell
-pnpm dev:web
-pnpm dev:api
-pnpm dev:worker
+pnpm runtime:smoke
 ```
 
-The web foundation is available at `http://localhost:3000`; the API foundation listens on
-`http://localhost:4000` but intentionally has no routes until Phase 1C.
+The local endpoints are:
+
+- Web: `http://localhost:3000`
+- API liveness/readiness: `http://localhost:4000/health/live` and `/health/ready`
+- Worker liveness/readiness: `http://localhost:4001/health/live` and `/health/ready`
+
+Run the complete static quality gate with `pnpm check`. Stop the application processes with
+`Ctrl+C`, then stop infrastructure with `pnpm runtime:down`.
 
 ## Phase 1B documentation
 
 - [Workspace decisions and commands](docs/phase-1b-workspace.md)
 - [Acceptance-criteria traceability](docs/phase-1b-traceability.md)
+
+## Phase 1C documentation
+
+- [Local runtime operations and decisions](docs/phase-1c-local-runtime.md)
+- [Acceptance-criteria traceability](docs/phase-1c-traceability.md)
